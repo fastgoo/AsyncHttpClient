@@ -10,13 +10,12 @@ namespace AsyncClient;
 
 class Client
 {
-    private $core;
+    use SwooleHttpClientApi;
 
     public function __construct(string $url, int $timeout = 5)
     {
-        $this->core = new Core();
-        $this->core->init($url);
-        $this->core->setConfig(['timeout' => $timeout]);
+        $this->initClient($url);
+        $this->setClientConfig(['timeout' => $timeout]);
     }
 
 
@@ -29,7 +28,7 @@ class Client
      */
     public function post(string $url, array $params, callable $callback)
     {
-        $this->core->requestHttp('POST', $url, $params, $callback);
+        $this->setRequest('POST', $url, $params, $callback);
         return $this;
     }
 
@@ -42,7 +41,7 @@ class Client
      */
     public function get(string $url, array $params, callable $callback)
     {
-        $this->core->requestHttp('GET', $url, $params, $callback);
+        $this->setRequest('GET', $url, $params, $callback);
         return $this;
     }
 
@@ -55,7 +54,7 @@ class Client
      */
     public function put(string $url, array $params, callable $callback)
     {
-        $this->core->requestHttp('PUT', $url, $params, $callback);
+        $this->setRequest('PUT', $url, $params, $callback);
         return $this;
     }
 
@@ -68,7 +67,36 @@ class Client
      */
     public function delete(string $url, array $params, callable $callback)
     {
-        $this->core->requestHttp('DELETE', $url, $params, $callback);
+        $this->setRequest('DELETE', $url, $params, $callback);
+        return $this;
+    }
+
+    public function send()
+    {
+        $this->sendRequest();
+    }
+
+    /**
+     * 下载文件
+     * @param string $url
+     * @param string $path
+     * @param callable $callback
+     * @return $this
+     */
+    public function download(string $url, string $path, callable $callback)
+    {
+        $this->setDownloadRequest($url, $path, $callback);
+        return $this;
+    }
+
+    /**
+     * 设置IP，可绕过异步dns解析
+     * @param string $ip
+     * @return $this
+     */
+    public function setDnsIp(string $ip)
+    {
+        $this->setIp($ip);
         return $this;
     }
 
@@ -79,7 +107,7 @@ class Client
      */
     public function setHeaders(array $params)
     {
-        $this->core->setHeaders($params);
+        $this->setRequestHeaders($params);
         return $this;
     }
 
@@ -90,7 +118,7 @@ class Client
      */
     public function setCookies(array $cookies)
     {
-        $this->core->setCookies($cookies);
+        $this->setRequestCookies($cookies);
         return $this;
     }
 
@@ -101,7 +129,7 @@ class Client
      */
     public function setConfig(array $config)
     {
-        $this->core->setConfig($config);
+        $this->setClientConfig($config);
         return $this;
     }
 
@@ -112,15 +140,17 @@ class Client
      */
     public function setFiles(array $params)
     {
-        $this->core->setFiles($params);
+        $this->setRequestFiles($params);
         return $this;
     }
 
     /**
-     * 初始化配置
+     * 清除配置信息
      */
-    public function clear()
+    public function clearAllSet()
     {
-        $this->core->clearSet();
+        $this->setRequestHeaders([]);
+        $this->setRequestCookies([]);
+        $this->setRequestFiles([]);
     }
 }
