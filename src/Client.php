@@ -18,6 +18,16 @@ class Client
         $this->setClientConfig(['timeout' => $timeout]);
     }
 
+    /**
+     * 静态方法返回实例对象
+     * @param string $url
+     * @param int $timeout
+     * @return Client
+     */
+    public static function init(string $url, int $timeout = 5)
+    {
+        return new self($url, $timeout);
+    }
 
     /**
      * POST请求
