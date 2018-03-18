@@ -1,74 +1,34 @@
+# 基于Swoole扩展的HTTP异步客户端
 
-### 扩展简介
+[![Latest Version](https://img.shields.io/badge/release-v1.0.0-green.svg?maxAge=2592000)](https://github.com/fastgoo/AsyncHttpClient/releases)
+[![Build Status](https://travis-ci.org/swoft-cloud/swoft.svg?branch=master)](https://travis-ci.org/fastgoo/AsyncHttpClient)
+[![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://secure.php.net/)
+[![Swoole Version](https://img.shields.io/badge/swoole-%3E=2.1.1-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
+[![Hiredis Version](https://img.shields.io/badge/hiredis-%3E=0.1-brightgreen.svg?maxAge=2592000)](https://github.com/redis/hiredis)
+[![Swoft Doc](https://img.shields.io/badge/docs-passing-green.svg?maxAge=2592000)](https://doc.swoft.org)
+[![Swoft License](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/swoft-cloud/swoft/blob/master/LICENSE)
 
----
+# 简介
+基于 Swoole 异步客户端的扩展包，可以像使用 GuzzleHttp 简单优雅的使用swoole的异步客户端，无需关注底层实现以及处理逻辑。可实现同时发起N个HTTP请求不会被阻塞。经测试循环并发100个请求，全部返回结果只需要3-4秒的时间。
 
-* 该扩展主要是通过aliyun官方 2017-05-25 版本云短信封装的php扩展包
-* 目前主要支持2个功能接口（发送短信、获取指定号码指定时间的短信记录）
-* 该扩展适用于目前所有现代框架
-* 作者qq 773729704、微信 huoniaojugege  加好友备注github
-
-### 安装
-
----
-
-```
-composer require fastgoo/aliyun-sms   
-
-
-或者手动引入到composer.json
-
-{
-  "require": {
-    "fastgoo/aliyun-sms": "1.0"
-  }
-}
-
-composer install #安装依赖
-```
-
-### 使用范例
-
----
-
-```
-<?php
-
-use Aliyun\Sms\Api AS SmsApi;
-
-/** 短信推送配置信息 **/
-$config = [
-    'accessKeyId' => '你的accessKeyId',
-    'accessKeySecret' => '你的accessKeySecret',
-    'signName' => '签名名称',
-    'defaultTemplate' => '默认模板code',
-];
-
-$smsApi = new SmsApi($config);
-
-//例如模板code的模板内容为：您的验证码为：${code}，该验证码 5 分钟内有效，请勿泄漏于他人。
-$templateCode = "模板code";
-
-//模板参数 code为模板内容里面的变量
-$param = ['code'=>'123456'];
-$phone = '手机号码';
-$result = $smsApi->setTemplate($param,$templateCode)->send($phone);
-```
-
-### 获取指定号码的发送记录
-
----
-
-```
-$date = "20170801"; 查询指定时间范围内的发送记录
-$nums = 15; #每页15条数据
-$page = 1; #当前页码
-$result = $smsApi->getSendDetail($phone,$date,$nums,$page)
-```
-
-### 备注
-
-* 开源了一个中文技术社区，[https://phalcon.fastgoo.net](https://phalcon.fastgoo.net) , 使用的是phalcon C扩展的高性能框架，简单已操作，API丰富，速度快，项目扩展性强
+- 基于 Swoole 扩展
+- 支持HTTPS 与 HTTP 2种协议
+- 使用 HTTPS 必须在编译swoole时启用--enable-openssl
+- 解决高并发请求（可做接口压测）
+- 异步 HTTP 请求，非阻塞
 
 
+# 参考文档
+[**中文文档**](https://wiki.swoole.com/wiki/page/p-http_client.html)
+
+
+# 环境要求
+
+1. PHP 7.0 +
+2. [Swoole 1.9](https://github.com/swoole/swoole-src/releases) +
+3. [Composer](https://getcomposer.org/)
+
+# Composer 安装
+
+* `composer require fastgoo/async-http-client`
 
