@@ -7,11 +7,30 @@
  */
 include './vendor/autoload.php';
 
+
 \AsyncClient\Client::init("https://timgsa.baidu.com")->download('/timg?image&quality=80&size=b9999_10000&sec=1521617943&di=913c0898b55cf2992d6d5136013e98d2&imgtype=jpg&er=1&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F120727%2F201995-120HG1030762.jpg', './logoaa.png', function (\Swoole\Http\Client $client) {
     var_dump($client);
 })->send();
-exit;
+//exit;
+$params = [
+    'address' => '773729704@qq.com',
+    'subject' => '标题',
+    'body' => '内容',
+];
+\AsyncClient\Client::init("https://open.fastgoo.net")->post('/base.api/email/send', $params, function (\Swoole\Http\Client $client) {
+    var_dump($client->body);
+})->send();
 
+$params = [
+    'address' => '773729704@qq.com',
+    'subject' => '标题2',
+    'body' => '内容2',
+];
+\AsyncClient\Client::init("https://open.fastgoo.net")
+    ->post('/base.api/email/send', $params, function (\Swoole\Http\Client $client) {
+        var_dump($client->body);
+    })
+    ->send();
 
 $client = new \AsyncClient\Client("https://timgsa.baidu.com");
 $client->download('/timg?image&quality=80&size=b9999_10000&sec=1521617943&di=913c0898b55cf2992d6d5136013e98d2&imgtype=jpg&er=1&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F120727%2F201995-120HG1030762.jpg', './logoaa.png', function (\Swoole\Http\Client $client) {
@@ -83,7 +102,6 @@ $client2->send();
 /**
  *
  */
-
 
 
 $client = new \AsyncClient\Client("https://open.fastgoo.net");
