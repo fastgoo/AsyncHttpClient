@@ -1,12 +1,8 @@
 # 基于Swoole扩展的HTTP异步客户端
 
 [![Latest Version](https://img.shields.io/badge/release-v1.0.0-green.svg?maxAge=2592000)](https://github.com/fastgoo/AsyncHttpClient/releases)
-[![Build Status](https://travis-ci.org/swoft-cloud/swoft.svg?branch=master)](https://travis-ci.org/fastgoo/AsyncHttpClient)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://secure.php.net/)
-[![Swoole Version](https://img.shields.io/badge/swoole-%3E=2.1.1-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
-[![Hiredis Version](https://img.shields.io/badge/hiredis-%3E=0.1-brightgreen.svg?maxAge=2592000)](https://github.com/redis/hiredis)
-[![Swoft Doc](https://img.shields.io/badge/docs-passing-green.svg?maxAge=2592000)](https://doc.swoft.org)
-[![Swoft License](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/swoft-cloud/swoft/blob/master/LICENSE)
+[![Swoole Version](https://img.shields.io/badge/swoole-%3E=1.9+-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
 
 # 简介
 基于 Swoole 异步客户端的扩展包，可以像使用 GuzzleHttp 简单优雅的使用swoole的异步客户端，无需关注底层实现以及处理逻辑。可实现同时发起N个HTTP请求不会被阻塞。经测试循环并发100个请求，全部返回结果只需要3-4秒的时间。
