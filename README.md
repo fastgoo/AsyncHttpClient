@@ -8,6 +8,7 @@
 基于 Swoole 异步客户端的扩展包，可以像使用 GuzzleHttp 简单优雅的使用swoole的异步客户端，无需关注底层实现以及处理逻辑。可实现同时发起N个HTTP请求不会被阻塞。经测试循环并发100个请求，全部返回结果只需要3-4秒的时间。
 
 - 基于 Swoole 扩展
+- 需在CLI模式下运行
 - 支持HTTPS 与 HTTP 2种协议
 - 使用 HTTPS 必须在编译swoole时启用--enable-openssl
 - 解决高并发请求（可做接口压测）
@@ -82,7 +83,7 @@ $client->setCookies([]);
 $client->setHeaders([]);
 
 # 重点强调，由于默认不设置ip会自动异步解析DNS取到IP然后才能创建客户端，
-# 异步解析DNS需要在CLI的模式下才能使用，所以在php-fpm下需要自己手动解析域名拿到IP才能发起HTTP请求
+# 异步解析DNS需要在CLI的模式下才能使用
 # 如果条件允许的情况下尽量存取IP然后去发起请求，不然调外部网络会造成请求阻塞，性能优势会有所下降
 $client->setDnsIp('192.168.1.1');
 
