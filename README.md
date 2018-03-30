@@ -1,74 +1,92 @@
+# 基于Swoole扩展的HTTP异步客户端
 
-### 扩展简介
+[![Latest Version](https://img.shields.io/badge/release-v1.0.0-green.svg?maxAge=2592000)](https://github.com/fastgoo/AsyncHttpClient/releases)
+[![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://secure.php.net/)
+[![Swoole Version](https://img.shields.io/badge/swoole-%3E=1.9-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
 
----
+# 简介
+基于 Swoole 异步客户端的扩展包，可以像使用 GuzzleHttp 简单优雅的使用swoole的异步客户端，无需关注底层实现以及处理逻辑。可实现同时发起N个HTTP请求不会被阻塞。经测试循环并发100个请求，全部返回结果只需要3-4秒的时间。
 
-* 该扩展主要是通过aliyun官方 2017-05-25 版本云短信封装的php扩展包
-* 目前主要支持2个功能接口（发送短信、获取指定号码指定时间的短信记录）
-* 该扩展适用于目前所有现代框架
-* 作者qq 773729704、微信 huoniaojugege  加好友备注github
+- 基于 Swoole 扩展
+- 需在CLI模式下运行
+- 支持HTTPS 与 HTTP 2种协议
+- 使用 HTTPS 必须在编译swoole时启用--enable-openssl
+- 解决高并发请求（可做接口压测）
+- 异步 HTTP 请求，非阻塞
+- 该扩展适用于目前所有现代框架
+- 作者qq 773729704、微信 huoniaojugege  加好友备注github
 
-### 安装
 
----
+# 参考文档
+[**中文文档**](https://wiki.swoole.com/wiki/page/p-http_client.html)
+
+# 环境要求
+
+1. PHP 7.0 +
+2. [Swoole 1.9](https://github.com/swoole/swoole-src/releases) +
+3. [Composer](https://getcomposer.org/)
+
+# Composer 安装
+
+* `composer require fastgoo/async-http-client`
+
+
+# 使用范例
 
 ```
-composer require fastgoo/aliyun-sms   
-
-
-或者手动引入到composer.json
-
-{
-  "require": {
-    "fastgoo/aliyun-sms": "1.0"
-  }
-}
-
-composer install #安装依赖
-```
-
-### 使用范例
-
----
-
-```
-<?php
-
-use Aliyun\Sms\Api AS SmsApi;
-
-/** 短信推送配置信息 **/
-$config = [
-    'accessKeyId' => '你的accessKeyId',
-    'accessKeySecret' => '你的accessKeySecret',
-    'signName' => '签名名称',
-    'defaultTemplate' => '默认模板code',
+# ----------HTTP 请求（请求方式 get post put delete）--------
+$client = new \AsyncClient\Client("https://open.fastgoo.net");
+$params = [
+    'address' => '邮箱',
+    'subject' => '标题',
+    'body' => '内容',
 ];
 
-$smsApi = new SmsApi($config);
+# 单请求
+$client->post('/base.api/email/send', $params, function (\Swoole\Http\Client $client) {
+    var_dump($client->body);
+});
 
-//例如模板code的模板内容为：您的验证码为：${code}，该验证码 5 分钟内有效，请勿泄漏于他人。
-$templateCode = "模板code";
+# 多请求
+foreach (range(1, 50) as $v) {
+    $client->post('/base.api/email/send', $params, function (\Swoole\Http\Client $client) {
+        var_dump($client->body);
+    });
+}
 
-//模板参数 code为模板内容里面的变量
-$param = ['code'=>'123456'];
-$phone = '手机号码';
-$result = $smsApi->setTemplate($param,$templateCode)->send($phone);
+# 发送请求文件
+$client->setFiles(['files' => __DIR__ . '/fastgoo-logo.png'])->post('/base.api/file/upload',[],function (\Swoole\Http\Client $client) {
+    var_dump($client->body);
+})
+
+# 开始发送请求
+$client->send();
+# -----------------------------END--------------------------
+
+
+
+# 下载文件范例
+$client = new \AsyncClient\Client("https://timgsa.baidu.com");
+$client->download('/timg?image&quality=80&size=b9999_10000&sec=1521617943&di=913c0898b55cf2992d6d5136013e98d2&imgtype=jpg&er=1&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F120727%2F201995-120HG1030762.jpg', './logoaa.png', function (\Swoole\Http\Client $client) {
+    var_dump($client);
+});
+$client->send();
+
+
+# 静态对象实例化请求
+\AsyncClient\Client::init("https://open.fastgoo.net")->post('/base.api/email/send', [], function (\Swoole\Http\Client $client) {
+    var_dump($client->body);
+})->send();
+
+# 请求设置Cookies 和 Headers
+$client->setCookies([]);
+$client->setHeaders([]);
+
+# 重点强调，由于默认不设置ip会自动异步解析DNS取到IP然后才能创建客户端，
+# 异步解析DNS需要在CLI的模式下才能使用
+# 如果条件允许的情况下尽量存取IP然后去发起请求，不然调外部网络会造成请求阻塞，性能优势会有所下降
+$client->setDnsIp('192.168.1.1');
+
 ```
-
-### 获取指定号码的发送记录
-
----
-
-```
-$date = "20170801"; 查询指定时间范围内的发送记录
-$nums = 15; #每页15条数据
-$page = 1; #当前页码
-$result = $smsApi->getSendDetail($phone,$date,$nums,$page)
-```
-
-### 备注
-
-* 开源了一个中文技术社区，[https://phalcon.fastgoo.net](https://phalcon.fastgoo.net) , 使用的是phalcon C扩展的高性能框架，简单已操作，API丰富，速度快，项目扩展性强
-
 
 
