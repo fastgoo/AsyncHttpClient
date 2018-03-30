@@ -45,13 +45,12 @@ class Client
     /**
      * GET请求
      * @param string $url
-     * @param array $params
      * @param callable $callback
      * @return $this
      */
-    public function get(string $url, array $params, callable $callback)
+    public function get(string $url, callable $callback)
     {
-        $this->setRequest('GET', $url, $params, $callback);
+        $this->setRequest('GET', $url, [], $callback);
         return $this;
     }
 
