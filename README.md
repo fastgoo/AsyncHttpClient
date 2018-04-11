@@ -16,6 +16,8 @@
 - 该扩展适用于目前所有现代框架
 - 作者qq 773729704、微信 huoniaojugege  加好友备注github
 
+# 更新记录
+- 2018.03.30 去掉get请求的参数，参数让用户自己带在URL上
 
 # 参考文档
 [**中文文档**](https://wiki.swoole.com/wiki/page/p-http_client.html)
