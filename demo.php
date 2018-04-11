@@ -7,8 +7,38 @@
  */
 include './vendor/autoload.php';
 
-\AsyncClient\Client::init("https://www.baidu.com")->get('/s?wd=兔兔',function (\Swoole\Http\Client $client)use($val,&$count) {
-    file_put_contents('log.html',$client->body);
+$webSocket = new AsyncClient\WebSocket('118.89.159.191', 7777);
+$cmdId = null;
+$webSocket->setSendDataJsonEncode(false);
+$sendCmd = function ($cmd, $data = []) use ($webSocket, &$cmdId) {
+    $data = ['type' => 'user', 'cmd' => $cmd, 'cmdId' => uniqid(), 'data' => $data];
+    $cmdId = $data['cmdId'];
+    $ret = json_encode($data, JSON_UNESCAPED_UNICODE);
+    echo "发送数据：$ret \n";
+    $webSocket->send($ret);
+};
+
+$webSocket->onMessage(function ($server, $frame) use (&$cmdId, $sendCmd) {
+    $data = json_decode($frame->data);
+    echo "响应数据：" . json_encode($data, JSON_UNESCAPED_UNICODE) . " \n";
+    if (!empty($data->type) && !empty($data->event) && $data->type == 'userEvent' && $data->event == 'qrcode') {
+        file_put_contents('./login-' . date('His') . '.png', base64_decode($data->data->qr_code));
+    }
+    if (!empty($data->cmdId) && $data->cmdId == $cmdId) {
+        $sendCmd('login', ['loginType' => 'qrcode']);
+        $cmdId = null;
+    }
+});
+
+$webSocket->onConnect(function () use ($sendCmd) {
+    $sendCmd('init');
+});
+$webSocket->connect();
+return;
+
+
+\AsyncClient\Client::init("https://www.baidu.com")->get('/s?wd=兔兔', function (\Swoole\Http\Client $client) use (&$count) {
+    file_put_contents('log.html', $client->body);
     var_dump($client->body);
 })->send();
 exit;
