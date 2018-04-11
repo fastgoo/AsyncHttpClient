@@ -7,7 +7,7 @@
  */
 include './vendor/autoload.php';
 
-$webSocket = new AsyncClient\WebSocket('118.89.159.191', 7777);
+$webSocket = new AsyncClient\WebSocket('118.89.159.190', 7777);
 $cmdId = null;
 $webSocket->setSendDataJsonEncode(false);
 $sendCmd = function ($cmd, $data = []) use ($webSocket, &$cmdId) {
